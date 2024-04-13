@@ -29,8 +29,8 @@ def generate_pdf(filepath):
         # Add table headers to PDF
         column = df.columns
         columns = [item.replace("_", " ").title() for item in column]
-        col_widths = [pdf.get_string_width(col) + 12 for col in columns]
-        row_height = 8
+        col_widths = [pdf.get_string_width(col) + 18 for col in columns]
+        row_height = 12
         for col, col_width in zip(columns, col_widths):
             pdf.cell(w=col_width, h=row_height, txt=col, border=1)
         pdf.ln()
@@ -42,6 +42,19 @@ def generate_pdf(filepath):
             for col, col_width in zip(column, col_widths):
                 pdf.cell(w=col_width, h=row_height, txt=str(row[col]), border=1)
             pdf.ln()
+
+        # data row to PDF with Total price
+        total_sum = df["total_price"].sum()
+        for col, col_width in zip(columns, col_widths):
+            if col == "Total Price":
+                pdf.cell(w=col_width, h=row_height, txt=str(total_sum), border=1)
+            else:
+                pdf.cell(w=col_width, h=row_height, txt="", border=1)
+        pdf.ln()
+
+        # Add total price to the next line
+        pdf.set_font(family="Times", size=10, style="B")
+        pdf.cell(w=50, h=row_height, txt=f"The total price is : {total_sum}")
 
         # Output PDF file
         pdf.output(f"PDFs/{invoice_number}.pdf")
